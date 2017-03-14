@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2>Try this as an example:</h2>
+490009109S<br>
+
+<p>
+<!-- Create an HTML button, and call the function when it is clicked -->
+<button type="button" onclick="callApi()">Refresh this data</button>
+
+<h2>Response from Server:</h2> <div id="response">???</div> 
+
+<script>
+// define the function
+function callApi() 
+{
+	// create a variable and set it is as an XMLHttpRequest object
+	var xhttp = new XMLHttpRequest();
+	
+	// function to format the data received
+	function format_bus_times(data)
+	{
+		// parse the data in JSON format 
+		var parsed_data = JSON.parse(data);
+		var formatted_data = '';
+		// for each bus returned
+		for (var i=0;i<parsed_data.length;i++)
+		    // append the relevant information to the formatted_data display string
+			formatted_data +=   "LineName: " + parsed_data[i].lineName +
+								" currently at " + parsed_data[i].currentLocation +
+			                    " travelling to " + parsed_data[i].destinationName + 
+			                    " will arrive in: " + (parsed_data[i].timeToStation/60).toFixed(0) +
+			                    " mins<br><br>";
+		// return this variable
+		return formatted_data;
+	}
+	
+	
+	// function to be applied when the response is received
+	xhttp.onreadystatechange = function()
+	{
+		// if the request obejct is ready and has received an OK 200 response..
+		if (xhttp.readyState == 4 && xhttp.status == 200)
+		{
+			// set the "response" div equal to the response text of the (processed) request. 
+			
+			var response_text = format_bus_times(xhttp.responseText);
+			document.getElementById("response").innerHTML = response_text
+		}
+	};
+	
+	// create a variable and store the value of the input box in it
+	var api_url = "https://api.tfl.gov.uk/StopPoint/940GZZLUWIP/arrivals/?mode=tube";
+	// make a GET request using the URL from the input box
+	xhttp.open("GET",api_url, true);
+	// send the GET request
+	xhttp.send();
+}
+</script>
+
+</body>
+</html>
